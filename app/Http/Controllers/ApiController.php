@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
-use Tymon\JWTAuth\JWTAuth as JWTAuthJWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class ApiController extends Controller
 {
@@ -64,7 +64,7 @@ class ApiController extends Controller
                 	'message' => 'Invalid login credentials',
                 ], Response::HTTP_BAD_REQUEST);
             }
-        } catch (\Exception $e) {
+        } catch (JWTException $e) {
     	    return $credentials;
             return response()->json([
                 	'error' => true,
@@ -99,7 +99,7 @@ class ApiController extends Controller
                 'error' => false,
                 'message' => 'User has been logged out'
             ]);
-        } catch (\Exception $exception) {
+        } catch (JWTException $exception) {
             return response()->json([
                 'error' => true,
                 'message' => 'User cannot be logged out'
