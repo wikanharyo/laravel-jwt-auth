@@ -14,15 +14,18 @@ class CreateDocumentsTable extends Migration
     public function up()
     {
         Schema::create('documents', function (Blueprint $table) {
-            $table->string('id', );
-            $table->string('name', );
-            $table->string('type', );
-            $table->string('folder_id', );
-            $table->string('content', );
+            $table->string('id')->unique();
+            $table->string('name');
+            $table->string('type')->default('document');
+            $table->string('folder_id');
+            $table->string('content')->nullable();
             $table->integer('timestamp');
-            $table->string('owner_id', );
-            $table->string('share', );
-            $table->string('company_id', );
+            $table->bigInteger('owner_id');
+            $table->string('share')->nullable();
+            $table->string('company_id')->nullable();
+            $table->foreign('folder_id')
+                    ->references('id')->on('folders')
+                    ->onDelete('cascade');
         });
     }
 

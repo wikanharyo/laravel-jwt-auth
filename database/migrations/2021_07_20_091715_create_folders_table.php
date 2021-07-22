@@ -14,13 +14,15 @@ class CreateFoldersTable extends Migration
     public function up()
     {
         Schema::create('folders', function (Blueprint $table) {
-            $table->string('id');
+            $table->string('id')->unique();
             $table->string('name');
             $table->string('type')->default('folder');
+            $table->tinyInteger('is_public')->default(true);
+            $table->bigInteger('owner_id');
             $table->integer('timestamp');
-            $table->string('owner_id');
-            $table->string('company_id');
-            $table->string('content');
+            $table->string('company_id')->nullable();
+            $table->string('share')->nullable();
+            $table->string('content')->nullable();
         });
     }
 

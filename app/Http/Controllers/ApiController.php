@@ -14,11 +14,12 @@ class ApiController extends Controller
     public function register(Request $request)
     {
         // Validate new user
-        $data = $request->only(['name', 'email', 'password']);
+        $data = $request->only(['name', 'email', 'password', 'company_id']);
         $validator = Validator::make($data, [
             'name' => 'required|string',
             'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:8|max:20'
+            'password' => 'required|string|min:8|max:20',
+            'company_id' => 'required|int'
         ]);
 
         // Invalid request response
@@ -27,17 +28,17 @@ class ApiController extends Controller
         }
 
         // Valid request, create a new user
-        $user = User::create([
+        $user = User::insert([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password)
+            'password' => bcrypt($request->password),
+            'company_id' => $request->company_id
         ]);
 
         // User created
         return response()->json([
             'error' => false,
             'message' => 'User created successfully',
-            $data
         ], Response::HTTP_OK);
     }
 
@@ -77,44 +78,5 @@ class ApiController extends Controller
             'error' => false,
             'token' => $token,
         ]);
-    }
-
-    public function logout(Request $request)
-    {
-        // Validator
-        $validator = Validator::make($request->only('token'), [
-            'token' => 'required'
-        ]);
-
-        //Send failed response if request is not valid
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-		//Request is validated, do logout        
-        try {
-            JWTAuth::invalidate($request->token);
- 
-            return response()->json([
-                'error' => false,
-                'message' => 'User has been logged out'
-            ]);
-        } catch (JWTException $exception) {
-            return response()->json([
-                'error' => true,
-                'message' => 'User cannot be logged out'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    public function get_user(Request $request)
-    {
-        $this->validate($request, [
-            'token' => 'required'
-        ]);
- 
-        $user = JWTAuth::authenticate($request->token);
- 
-        return response()->json(['user' => $user]);
     }
 }
